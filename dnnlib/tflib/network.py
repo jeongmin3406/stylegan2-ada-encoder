@@ -546,6 +546,7 @@ class Network:
             minibatch_size: int = None,
             num_gpus: int = 1,
             assume_frozen: bool = False,
+            custom_inputs: Any = None,
             **dynamic_kwargs) -> Union[np.ndarray, Tuple[np.ndarray, ...], List[np.ndarray]]:
         """Run this network for the given NumPy array(s), and return the output(s) as NumPy array(s).
 
@@ -585,9 +586,14 @@ class Network:
         # Build graph.
         if key not in self._run_cache:
             with tfutil.absolute_name_scope(self.scope + "/_Run"), tf.control_dependencies(None):
-                with tf.device("/cpu:0"):
-                    in_expr = [tf.placeholder(tf.float32, name=name) for name in self.input_names]
-                    in_split = list(zip(*[tf.split(x, num_gpus) for x in in_expr]))
+                if custom_inputs is not None:
+                    with tf.device("/gpu:0"):
+                        in_expr = [input_builder(name) for input_builder, name in zip(custom_inputs, self.input_names)]
+                        in_split = list(zip(*[tf.split(x, num_gpus) for x in in_expr]))
+                else:
+                    with tf.device("/cpu:0"):
+                        in_expr = [tf.placeholder(tf.float32, name=name) for name in self.input_names]
+                        in_split = list(zip(*[tf.split(x, num_gpus) for x in in_expr]))
 
                 out_split = []
                 for gpu in range(num_gpus):
