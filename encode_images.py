@@ -10,9 +10,6 @@ import config
 from encoder.generator_model import Generator
 from encoder.perceptual_model import PerceptualModel
 
-URL_FFHQ = 'https://drive.google.com/uc?id=1MEGjdvVpUsu1jB4zrXZN7Y4kBBOzizDQ'  # karras2019stylegan-ffhq-1024x1024.pkl
-
-
 def split_to_batches(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
@@ -24,6 +21,9 @@ def main():
     parser.add_argument('generated_images_dir', help='Directory for storing generated images')
     parser.add_argument('dlatent_dir', help='Directory for storing dlatent representations')
 
+    # network pkl
+    parser.add_argument('--network_pkl',default='https://drive.google.com/uc?id=1MEGjdvVpUsu1jB4zrXZN7Y4kBBOzizDQ', help='karras2019stylegan-ffhq-1024x1024.pkl')
+    
     # for now it's unclear if larger batch leads to better performance/quality
     parser.add_argument('--batch_size', default=1, help='Batch size for generator and perceptual model', type=int)
 
@@ -47,7 +47,7 @@ def main():
 
     # Initialize generator and perceptual model
     tflib.init_tf()
-    with dnnlib.util.open_url(URL_FFHQ, cache_dir=config.cache_dir) as f:
+    with dnnlib.util.open_url(args.network_pkl, 'rb') as f:
         generator_network, discriminator_network, Gs_network = pickle.load(f)
 
     generator = Generator(Gs_network, args.batch_size, randomize_noise=args.randomize_noise)
