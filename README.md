@@ -1,4 +1,11 @@
-## StyleGAN2 with adaptive discriminator augmentation (ADA)<br>&mdash; Official TensorFlow implementation
+## StyleGAN2-ada-encoder
+
+## Reference
+* StyleGAN2-ada: https://github.com/NVlabs/stylegan2-ada
+* StyleGAN-encoder: https://github.com/Puzer/stylegan-encoder
+
+## Original Readme
+StyleGAN2 with adaptive discriminator augmentation (ADA)<br>&mdash; Official TensorFlow implementation
 
 ![Teaser image](./docs/stylegan2-ada-teaser-1024x252.png)
 
